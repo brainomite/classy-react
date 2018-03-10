@@ -3,6 +3,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const commands = require('./commands')
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -23,6 +24,12 @@ function activate(context) {
     });
 
     context.subscriptions.push(disposable);
+    for (let command in commands){
+        if (commands.hasOwnProperty(command)){
+            const newCommand = vscode.commands.registerCommand(`extension.${command}`, commands[command])
+            context.subscriptions.push(newCommand)
+        }
+    }
 }
 exports.activate = activate;
 
