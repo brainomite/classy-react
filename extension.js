@@ -16,17 +16,9 @@ function activate(context) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.sayHello', function () {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
-    });
-
-    context.subscriptions.push(disposable);
-    for (let command in commands){
-        if (commands.hasOwnProperty(command)){
-            const newCommand = vscode.commands.registerCommand(`extension.${command}`, commands[command])
+    for (let commandId in commands){
+        if (commands.hasOwnProperty(commandId)){
+            const newCommand = vscode.commands.registerCommand(`extension.${commandId}`, commands[commandId])
             context.subscriptions.push(newCommand)
         }
     }
