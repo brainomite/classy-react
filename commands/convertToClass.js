@@ -2,6 +2,8 @@
 const vscode = require('vscode');
 const Position = vscode.Position
 const Range = vscode.Range
+const babel = require('babel-core')
+const { test1 } = require('../babelPlugins')
 
 
 module.exports = () => {
@@ -12,7 +14,14 @@ module.exports = () => {
   const lastPos = eDocument.lineAt(lastLine).range.end
   const entireDoc = new Range(new Position(0, 0), new Position(lastLine, lastPos))
   const newCode = code.split('\n').map((line, index) => (index + 1) + line ).join('\n')
+
+  const result = babel.transform(code, {
+    plugins: [
+      test1,
+    ]
+  })
+
   editor.edit(editbuilder => {
-    editbuilder.replace(entireDoc, newCode)
+    editbuilder.replace(entireDoc, result.code)
   })
 }
