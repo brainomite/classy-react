@@ -1,6 +1,5 @@
 /* global suite, test */
-
-//
+'use strict'
 // Note: This example test is leveraging the Mocha test framework.
 // Please refer to their documentation on https://mochajs.org/ for help.
 //
@@ -8,37 +7,36 @@
 // The module 'assert' provides assertion methods from chai
 const assert = require('chai').assert;
 const { transpolateToClass, } = require('../commands/convertToClass')
+const path = require('path')
+const fs = require('fs')
 
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-// const vscode = require('vscode');
-// const myExtension = require('../extension');
+const TEST_FILES_FOLDER = './convertToClassTestFiles'
+const testFolder = path.resolve(__dirname, TEST_FILES_FOLDER)
 
-// Defines a Mocha test suite to group tests of similar kind together
+const getCode = fileName => {
+  const thePath = path.join(testFolder, fileName)
+  return fs.readFileSync(thePath).toString().trim()
+}
+
 suite('transpolateToClass Tests', function() {
 
-    // Defines a Mocha unit test
-    test('basic unamed function with no props', () => {
-        const startCode = `
-const renderTest = function(){
-  return (
-    <h1>test</h1>
-  )
-}
-        `
-        const code = `class renderTest extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = undefined;
-  }
-
-  render() {
-    return <h1>test</h1>;
-  };
-}`
+    suite('basic unamed function with no props', () => {
+      // Defines a Mocha unit test
+      test('test 1 with one name', () => {
+        const startCode = getCode('basicUnamedFunctionNoProps_begin.txt')
+        const code = getCode('basicUnamedFunctionNoProps_end.txt')
 
         const { result, } = transpolateToClass(startCode)
-        console.log('result: ', result.code);
+
         assert.strictEqual(result.code, code)
+      });
+      test('test 2 with a different name', () => {
+        const startCode = getCode('basicUnamedFunctionNoPropsDifName_begin.txt')
+        const code = getCode('basicUnamedFunctionNoPropsDifName_end.txt')
+
+        const { result, } = transpolateToClass(startCode)
+
+        assert.strictEqual(result.code, code)
+      });
     });
 });
