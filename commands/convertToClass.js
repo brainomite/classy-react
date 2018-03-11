@@ -17,7 +17,11 @@ const generateResultObj = () => ({
   functionParentLocated: false,
   declarationLocated: false,
 })
-
+const buildBlockStatement = node => {
+  const returnStatement = types.returnStatement(node)
+  const block = types.blockStatement(Array(returnStatement))
+  return block
+}
 const transpolateToClass = (code) => {
   const resultObj = generateResultObj()
   const ast = babylon.parse(code, {
@@ -28,7 +32,7 @@ const transpolateToClass = (code) => {
       JSXElement(jsxPath) {
         resultObj.jsxFound = true
         const funcPath = jsxPath.findParent((pPath) => {
-          return pPath.isFunctionExpression()
+          return pPath.isFunctionExpression()  || pPath.isArrowFunctionExpression()
         })
         if (funcPath) {
           resultObj.functionParentLocated = true
@@ -66,9 +70,12 @@ const transpolateToClass = (code) => {
     }
   `);
 
+  const renderMethod = types.isBlockStatement(relevantNodes.body) ?
+    types.classMethod('method', types.identifier('render'), [], relevantNodes.body) :
+    types.classMethod('method', types.identifier('render'), [], buildBlockStatement(relevantNodes.body))
   const newAst = buildRequire({
     CLASS_NAME: types.identifier(relevantNodes.identifierName),
-    RENDER_METHOD: types.classMethod('method', types.identifier('render'), [], relevantNodes.body),
+    RENDER_METHOD: renderMethod,
   });
   relevantNodes.pathToReplace.replaceWith(newAst)
   resultObj.result = generate(ast)

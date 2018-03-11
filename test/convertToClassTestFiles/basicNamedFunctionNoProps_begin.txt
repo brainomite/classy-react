@@ -1,0 +1,5 @@
+const renderTest = function renderTest(){
+  return (
+    <h1>test</h1>
+  )
+}

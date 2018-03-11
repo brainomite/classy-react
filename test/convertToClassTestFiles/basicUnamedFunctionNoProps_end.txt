@@ -1,0 +1,10 @@
+class renderTest extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = undefined;
+  }
+
+  render() {
+    return <h1>test</h1>;
+  };
+}
