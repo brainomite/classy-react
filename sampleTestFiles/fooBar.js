@@ -5,11 +5,9 @@ const test = function (foo, bar) {
   return foo === bar
 }
 
-const renderTest = function(){
-  return (
+const renderTest = () => (
     <h1>test</h1>
   )
-}
 
 module.exports = {
   test,
