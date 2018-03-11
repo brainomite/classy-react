@@ -1,7 +1,5 @@
 'use strict'
 const vscode = require('vscode');
-const Position = vscode.Position
-const Range = vscode.Range
 const babel = require('babel-core')
 
 const { test1 } = require('../babelPlugins')
@@ -18,10 +16,6 @@ module.exports = () => {
   } else {
     const eDocument = editor.document
     const code = eDocument.getText(selection)
-    const lastLine = eDocument.lineCount - 1
-    const lastPos = eDocument.lineAt(lastLine).range.end
-    const entireDoc = new Range(new Position(0, 0), new Position(lastLine, lastPos))
-    console.log('editor.selection: ', editor.selection);
 
     const result = babel.transform(code, {
       plugins: [
