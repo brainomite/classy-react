@@ -28,8 +28,14 @@ const transpolateToClass = (code) => {
     plugins: ['jsx', ],
   });
   const relevantNodes = {}
+
   traverse(ast, {
       JSXElement(jsxPath) {
+        if (jsxPath.node.extra &&
+            jsxPath.node.extra.parenthesized &&
+            !types.isParenthesizedExpression(jsxPath.parent)){
+          jsxPath.replaceWith(types.parenthesizedExpression(jsxPath.node))
+        }
         resultObj.jsxFound = true
         const funcPath = jsxPath.findParent((pPath) => {
           return pPath.isFunctionExpression()  || pPath.isArrowFunctionExpression()
@@ -51,6 +57,13 @@ const transpolateToClass = (code) => {
         relevantNodes.identifierName = funcPath.parent.id.name
         relevantNodes.body = funcPath.node.body
         relevantNodes.pathToReplace = declarationPath
+      },
+      MemberExpression(path){
+        if (path.node.object.name === 'props'){
+          const objectPath = path.get('object')
+          const thisMemberExpression = types.memberExpression(types.thisExpression(), types.identifier('props'))
+          objectPath.replaceWith(thisMemberExpression)
+        }
       },
   });
 
