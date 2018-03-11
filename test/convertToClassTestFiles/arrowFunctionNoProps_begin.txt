@@ -1,0 +1,3 @@
+const renderTest = () => (
+    <h1>test</h1>
+)

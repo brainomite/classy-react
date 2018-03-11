@@ -25,17 +25,31 @@ suite('transpolateToClass Tests', function() {
       test('test 1 with one name', () => {
         const startCode = getCode('basicUnamedFunctionNoProps_begin.txt')
         const code = getCode('basicUnamedFunctionNoProps_end.txt')
-
         const { result, } = transpolateToClass(startCode)
-
         assert.strictEqual(result.code, code)
       });
       test('test 2 with a different name', () => {
         const startCode = getCode('basicUnamedFunctionNoPropsDifName_begin.txt')
         const code = getCode('basicUnamedFunctionNoPropsDifName_end.txt')
-
         const { result, } = transpolateToClass(startCode)
+        assert.strictEqual(result.code, code)
+      });
+    });
 
+    suite('basic named function', () => {
+      test('with no props', () => {
+        const startCode = getCode('basicNamedFunctionNoProps_begin.txt')
+        const code = getCode('basicNamedFunctionNoProps_end.txt')
+        const { result, } = transpolateToClass(startCode)
+        assert.strictEqual(result.code, code)
+      });
+    });
+
+    suite('arrow function', () => {
+      test('with no props', () => {
+        const startCode = getCode('arrowFunctionNoProps_begin.txt')
+        const code = getCode('arrowFunctionNoProps_end.txt')
+        const { result, } = transpolateToClass(startCode)
         assert.strictEqual(result.code, code)
       });
     });
