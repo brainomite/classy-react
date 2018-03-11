@@ -2,7 +2,7 @@
 const vscode = require('vscode');
 const babel = require('babel-core')
 
-const { test1 } = require('../babelPlugins')
+const { jsxFunctionToClass, test1, } = require('../babelPlugins')
 
 const errorMessage = msg => {
   vscode.window.showErrorMessage(msg)
@@ -19,15 +19,17 @@ module.exports = () => {
 
     const result = babel.transform(code, {
       plugins: [
-        test1,
-      ]
-    }, {
-      plugins: ['jsx']
+        jsxFunctionToClass,
+      ],
+      parserOpts: {
+        plugins: ['jsx', ],
+      },
     })
+    console.log('result: ', result.code);
 
-    editor.edit(editbuilder => {
-      editbuilder.replace(selection, result.code)
-    })
+    // editor.edit(editbuilder => {
+    //   editbuilder.replace(selection, result.code)
+    // })
 
   }
 }
