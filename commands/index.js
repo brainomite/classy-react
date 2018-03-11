@@ -1,6 +1,6 @@
 'use strict'
 
 module.exports = {
-  convertToClass: require('./convertToClass'),
-  sayHello: require('./sayHello')
+  convertToClass: require('./convertToClass').command,
+  sayHello: require('./sayHello'),
 }

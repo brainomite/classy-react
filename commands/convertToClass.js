@@ -75,7 +75,7 @@ const transpolateToClass = (code) => {
   return resultObj
 }
 
-module.exports = () => {
+const command = () => {
   const editor = vscode.window.activeTextEditor
   const selection = editor.selection
   if (selection.isEmpty){
@@ -102,4 +102,9 @@ module.exports = () => {
     })
 
   }
+}
+
+module.exports = {
+  command,
+  transpolateToClass,
 }
