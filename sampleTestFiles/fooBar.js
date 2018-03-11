@@ -1,12 +1,14 @@
 'use strict'
 const React = require('react')
 
-const test = function (foo, bar) {
-  return foo === bar
+const test = function () {
+  const a = <h1>test</h1>
+  const b = (<h2>test</h2>)
+  return a < b ? a : b
 }
 
-const renderTest = () => (
-    <h1>test</h1>
+const renderTest = props => (
+    <h1>{props.test}</h1>
   )
 
 module.exports = {
