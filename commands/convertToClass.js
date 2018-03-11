@@ -1,15 +1,12 @@
 'use strict'
-/* eslint-disable no-unused-vars */
 const vscode = require('vscode');
-const babel = require('babel-core')
 const traverse = require('babel-traverse').default;
 const babylon = require('babylon');
 const template = require('babel-template');
 const generate = require('babel-generator').default
 
-const types = babel.types
+const types = require('babel-types')
 
-const { jsxFunctionToClass, } = require('../babelPlugins')
 
 const errorMessage = msg => {
   vscode.window.showErrorMessage(msg)
@@ -72,7 +69,7 @@ module.exports = () => {
     }
 
     const buildRequire = template(`
-      class CLASS_NAME{
+      class CLASS_NAME extends React.Component {
         constructor(props){
           super(props)
           this.state = undefined
@@ -85,7 +82,6 @@ module.exports = () => {
       CLASS_NAME: types.identifier(relevantNodes.identifierName),
       RENDER_METHOD: types.classMethod('method', types.identifier('render'), [], relevantNodes.body),
     });
-    console.log('newAst: ', newAst);
     relevantNodes.pathToReplace.replaceWith(newAst)
     const result = generate(ast)
     editor.edit(editbuilder => {
