@@ -2,5 +2,5 @@
 
 module.exports = {
   convertToClass: require('./convertToClass').command,
-  sayHello: require('./sayHello'),
+  convertToFunctions: require('./convertToFunctions').command,
 }

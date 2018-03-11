@@ -11,15 +11,15 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello",
+        "onCommand:extension.convertToFunctions",
         "onCommand:extension.convertToClass"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello world"
+                "command": "extension.convertToFunctions",
+                "title": "Classy React: Convert To Functions"
             },
             {
                 "command": "extension.convertToClass",
