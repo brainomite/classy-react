@@ -50,8 +50,15 @@ const transpolateToFunctions = code => {
     },
     ThisExpression(path){
       const parentPath = path.parentPath
-      if (path.key === 'object' && parentPath.isMemberExpression() && parentPath.parentKey === 'object'){
-        parentPath.replaceWith(parentPath.node.property)
+      if (path.key === 'object') {
+        if (parentPath.isMemberExpression() && parentPath.parentKey === 'object'){
+          parentPath.replaceWith(parentPath.node.property)
+        } else if (parentPath.isMemberExpression() && parentPath.parentKey === 'init'){
+          parentPath.replaceWith(parentPath.node.property)
+        } else if (parentPath.isExpression() && parentPath.parentKey === 'expression'){
+          parentPath.replaceWith(parentPath.node.property)
+        }
+
       }
     },
     Identifier(path){

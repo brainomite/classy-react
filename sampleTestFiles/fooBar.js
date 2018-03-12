@@ -13,10 +13,13 @@ class renderTest extends React.Component {
   }
 
   render() {
-    return (<h1>{this.props.test}</h1>);
+    const a = this.a
+    return (<h1>{this.test}</h1>);
   };
 }
 module.exports = {
   test,
   renderTest
 }
+
+//3powellardv6caspkkrdn7my66riddo3sd56mgb44ovygcolr34q
