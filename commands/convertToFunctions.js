@@ -21,8 +21,9 @@ const isThisMemberExpression = path => {
   const node = path.node
   const object = node.object
 }
-const buildRequire = template(`const FUNCTION_NAME = (props) => FUNCTION_BODY`);
 
+const buildRequire = template(`const FUNCTION_NAME = (props) => FUNCTION_BODY`);
+const buildRequireWithoutProps = template(`const FUNCTION_NAME = () => FUNCTION_BODY`);
 const transpolateToFunctions = code => {
   const resultObj = generateResultObj()
   const ast = babylon.parse(code, {
@@ -68,11 +69,12 @@ const transpolateToFunctions = code => {
       propsWasSeen = false
       path.traverse(nestedVisitor)
       const body = path.node.body
-
-      const newAst = buildRequire({
+      const buildObj = {
         FUNCTION_NAME: methodName === 'render' ? types.identifier(className) : types.identifier(methodName),
         FUNCTION_BODY: body,
-      });
+      }
+
+      const newAst = propsWasSeen ? buildRequire(buildObj) : buildRequireWithoutProps(buildObj)
       newBody.push(newAst)
     },
   })
