@@ -35,5 +35,13 @@ suite('transpolateToFunctions Tests', function() {
         const { result, } = transpolateToFunctions(startCode)
         assert.strictEqual(result.code, code)
       });
+
+      test('Constructor, render and a second random func with this and props', () => {
+        const startCode = getCode('constructorRenderandSecondFunc_begin.js')
+        const code = getCode('constructorRenderandSecondFunc_end.js')
+        const { result, } = transpolateToFunctions(startCode)
+        assert.strictEqual(result.code, code)
+      });
+
     });
 });
