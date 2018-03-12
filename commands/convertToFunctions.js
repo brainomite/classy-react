@@ -73,7 +73,10 @@ const command = () => {
   } else {
     const eDocument = editor.document
     const code = eDocument.getText(selection)
-
+    if (code.search(/this\.setState|this\.state/)){
+      errorMessage('At this time Classy React only supports converting stateless classes.\nPlease eliminate any useage of state and try again')
+      return
+    }
     const { result, classFound, } = transpolateToFunctions(code)
 
     // if (!jsxFound){
