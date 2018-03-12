@@ -7,18 +7,16 @@ const generate = require('babel-generator').default
 
 const types = require('babel-types')
 
-
+const classMethodsToSkip = [
+  'constructor',
+]
 const errorMessage = msg => {
   vscode.window.showErrorMessage(msg)
 }
 
 const generateResultObj = () => ({
 })
-const buildBlockStatement = node => {
-  const returnStatement = types.returnStatement(node)
-  const block = types.blockStatement(Array(returnStatement))
-  return block
-}
+
 const nestedVisitor = {
   JSXElement(path){
     if (path.node.extra &&
@@ -28,90 +26,41 @@ const nestedVisitor = {
     }
   },
 }
+
+const buildRequire = template(`const FUNCTION_NAME = (props) => FUNCTION_BODY`);
+
 const transpolateToFunctions = code => {
   const resultObj = generateResultObj()
   const ast = babylon.parse(code, {
     plugins: ['jsx', ],
   });
-  const relevantNodes = {}
-  if (ast.program.body.length>1 || !types.isClassDeclaration(ast.program.body[0])){
+
+  if (ast.program.body.length > 1 || !types.isClassDeclaration(ast.program.body[0])){
     errorMessage('Please just select the entire class')
     return resultObj
   } else {
     resultObj.classFound = true
   }
-  return resultObj
-}
-
-const transpolateToClass = (code) => {
-  const resultObj = generateResultObj()
-  const ast = babylon.parse(code, {
-    plugins: ['jsx', ],
-  });
-
-
+  const newBody = []
+  const classNode = ast.program.body[0]
+  const className = classNode.id.name
   traverse(ast, {
-      JSXElement(jsxPath) {
-        if (jsxPath.node.extra &&
-            jsxPath.node.extra.parenthesized &&
-            !types.isParenthesizedExpression(jsxPath.parent)){
-          jsxPath.replaceWith(types.parenthesizedExpression(jsxPath.node))
-        }
-        resultObj.jsxFound = true
-        const funcPath = jsxPath.findParent((pPath) => {
-          return pPath.isFunctionExpression()  || pPath.isArrowFunctionExpression()
-        })
-        if (funcPath) {
-          resultObj.functionParentLocated = true
-        } else {
-          return
-        }
-        const declarationPath = funcPath.findParent(aPath => {
-          return aPath.isVariableDeclaration()
-        })
-        if (declarationPath){
-          resultObj.declarationLocated = true
-        } else {
-          return
-        }
-
-        relevantNodes.identifierName = funcPath.parent.id.name
-        relevantNodes.body = funcPath.node.body
-        relevantNodes.pathToReplace = declarationPath
-      },
-      MemberExpression(path){
-        if (path.node.object.name === 'props'){
-          const objectPath = path.get('object')
-          const thisMemberExpression = types.memberExpression(types.thisExpression(), types.identifier('props'))
-          objectPath.replaceWith(thisMemberExpression)
-        }
-      },
-  });
-
-  if (!resultObj.jsxFound ||
-      !resultObj.functionParentLocated ||
-      !resultObj.declarationLocated){
-    return resultObj
-  }
-
-  const buildRequire = template(`
-    class CLASS_NAME extends React.Component {
-      constructor(props){
-        super(props)
-        this.state = undefined
+    ClassMethod(path){
+      const methodName = path.node.key.name
+      if (classMethodsToSkip.includes(methodName)) {
+        return
       }
-      RENDER_METHOD
-    }
-  `);
+      path.traverse(nestedVisitor)
+      const body = path.node.body
 
-  const renderMethod = types.isBlockStatement(relevantNodes.body) ?
-    types.classMethod('method', types.identifier('render'), [], relevantNodes.body) :
-    types.classMethod('method', types.identifier('render'), [], buildBlockStatement(relevantNodes.body))
-  const newAst = buildRequire({
-    CLASS_NAME: types.identifier(relevantNodes.identifierName),
-    RENDER_METHOD: renderMethod,
-  });
-  relevantNodes.pathToReplace.replaceWith(newAst)
+      const newAst = buildRequire({
+        FUNCTION_NAME: methodName === 'render' ? types.identifier(className) : types.identifier(methodName),
+        FUNCTION_BODY: body,
+      });
+      newBody.push(newAst)
+    },
+  })
+  ast.program.body = newBody
   resultObj.result = generate(ast)
   return resultObj
 }
@@ -125,7 +74,7 @@ const command = () => {
     const eDocument = editor.document
     const code = eDocument.getText(selection)
 
-    const result = transpolateToFunctions(code)
+    const { result, classFound, } = transpolateToFunctions(code)
 
     // if (!jsxFound){
     //   errorMessage('Classy React was unable to locate any JSX contained within. Aborting')
@@ -137,9 +86,9 @@ const command = () => {
     //   errorMessage('Classy React was unable to loacte the JSX function declarations. Aborting')
     //   return
     // }
-    if (!result.classFound) return
+    if (!classFound) return
     editor.edit(editbuilder => {
-      editbuilder.replace(selection, result.code)
+      editbuilder.replace(selection, '/*\n' + code + '*/\n\n' + result.code)
     })
 
   }
