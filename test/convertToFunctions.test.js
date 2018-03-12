@@ -28,5 +28,12 @@ suite('transpolateToFunctions Tests', function() {
         const { result, } = transpolateToFunctions(startCode)
         assert.strictEqual(result.code, code)
       });
+
+      test('Constructor, render, with this and props', () => {
+        const startCode = getCode('constructorRender_begin.js')
+        const code = getCode('constructorRender_end.js')
+        const { result, } = transpolateToFunctions(startCode)
+        assert.strictEqual(result.code, code)
+      });
     });
 });
