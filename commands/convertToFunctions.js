@@ -13,21 +13,42 @@ const errorMessage = msg => {
 }
 
 const generateResultObj = () => ({
-  jsxFound: false,
-  functionParentLocated: false,
-  declarationLocated: false,
 })
 const buildBlockStatement = node => {
   const returnStatement = types.returnStatement(node)
   const block = types.blockStatement(Array(returnStatement))
   return block
 }
-const transpolateToClass = (code) => {
+const nestedVisitor = {
+  JSXElement(path){
+    if (path.node.extra &&
+        path.node.extra.parenthesized &&
+        !types.isParenthesizedExpression(path.parent)){
+      path.replaceWith(types.parenthesizedExpression(path.node))
+    }
+  },
+}
+const transpolateToFunctions = code => {
   const resultObj = generateResultObj()
   const ast = babylon.parse(code, {
     plugins: ['jsx', ],
   });
   const relevantNodes = {}
+  if (ast.program.body.length>1 || !types.isClassDeclaration(ast.program.body[0])){
+    errorMessage('Please just select the entire class')
+    return resultObj
+  } else {
+    resultObj.classFound = true
+  }
+  return resultObj
+}
+
+const transpolateToClass = (code) => {
+  const resultObj = generateResultObj()
+  const ast = babylon.parse(code, {
+    plugins: ['jsx', ],
+  });
+
 
   traverse(ast, {
       JSXElement(jsxPath) {
@@ -104,19 +125,19 @@ const command = () => {
     const eDocument = editor.document
     const code = eDocument.getText(selection)
 
-    const { result, jsxFound, functionParentLocated, declarationLocated, } = transpolateToClass(code)
+    const result = transpolateToFunctions(code)
 
-    if (!jsxFound){
-      errorMessage('Classy React was unable to locate any JSX contained within. Aborting')
-      return
-    } else if (!functionParentLocated){
-      errorMessage('Classy React was unable to locate the JSX function to convert')
-      return
-    } else if (!declarationLocated){
-      errorMessage('Classy React was unable to loacte the JSX function declarations. Aborting')
-      return
-    }
-
+    // if (!jsxFound){
+    //   errorMessage('Classy React was unable to locate any JSX contained within. Aborting')
+    //   return
+    // } else if (!functionParentLocated){
+    //   errorMessage('Classy React was unable to locate the JSX function to convert')
+    //   return
+    // } else if (!declarationLocated){
+    //   errorMessage('Classy React was unable to loacte the JSX function declarations. Aborting')
+    //   return
+    // }
+    if (!result.classFound) return
     editor.edit(editbuilder => {
       editbuilder.replace(selection, result.code)
     })
@@ -126,5 +147,5 @@ const command = () => {
 
 module.exports = {
   command,
-  transpolateToClass,
+  transpolateToFunctions,
 }
