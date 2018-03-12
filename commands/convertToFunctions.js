@@ -9,6 +9,12 @@ const types = require('babel-types')
 
 const classMethodsToSkip = [
   'constructor',
+  'componentWillMount',
+  'componentDidMount',
+  'componentWillReceiveProps',
+  'componentDidUpdate',
+  'componentWillUnmount',
+  'componentDidCatch',
 ]
 const errorMessage = msg => {
   vscode.window.showErrorMessage(msg)
