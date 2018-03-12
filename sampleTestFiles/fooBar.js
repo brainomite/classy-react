@@ -10,7 +10,6 @@ const test = function () {
 class renderTest extends React.Component {
   constructor(props) {
     super(props);
-    this.state = undefined;
   }
 
   render() {

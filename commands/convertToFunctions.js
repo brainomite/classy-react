@@ -17,7 +17,10 @@ const errorMessage = msg => {
 const generateResultObj = () => ({
 })
 
-
+const isThisMemberExpression = path => {
+  const node = path.node
+  const object = node.object
+}
 const buildRequire = template(`const FUNCTION_NAME = (props) => FUNCTION_BODY`);
 
 const transpolateToFunctions = code => {
@@ -44,9 +47,17 @@ const transpolateToFunctions = code => {
         path.replaceWith(types.parenthesizedExpression(path.node))
       }
     },
-    MemberExpression(path){
-      console.log('inMember')
+    ThisExpression(path){
+      const parentPath = path.parentPath
+      if (path.key === 'object' && parentPath.isMemberExpression() && parentPath.parentKey === 'object'){
+        parentPath.replaceWith(parentPath.node.property)
+      }
     },
+    Identifier(path){
+      if (path.node.name === 'props'){
+        propsWasSeen = true
+      }
+    }
   }
   traverse(ast, {
     ClassMethod(path){
@@ -84,19 +95,12 @@ const command = () => {
     }
     const { result, classFound, } = transpolateToFunctions(code)
 
-    // if (!jsxFound){
-    //   errorMessage('Classy React was unable to locate any JSX contained within. Aborting')
-    //   return
-    // } else if (!functionParentLocated){
-    //   errorMessage('Classy React was unable to locate the JSX function to convert')
-    //   return
-    // } else if (!declarationLocated){
-    //   errorMessage('Classy React was unable to loacte the JSX function declarations. Aborting')
-    //   return
-    // }
-    if (!classFound) return
+    if (!classFound) {
+      errorMessage('Classy React was unable to loacte the class declaration. Aborting')
+      return
+    }
     editor.edit(editbuilder => {
-      editbuilder.replace(selection, '/*\n' + code + '*/\n\n' + result.code)
+      editbuilder.replace(selection, '/*\n' + code + '\n*/\n\n' + result.code)
     })
 
   }
