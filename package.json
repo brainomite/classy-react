@@ -3,9 +3,13 @@
     "displayName": "Classy React",
     "description": "Helps convert from a react function to a react class, and a stateless react class to a react function.",
     "version": "0.0.1",
-    "publisher": "AaronYoung",
+    "publisher": "aaronYoung",
     "engines": {
         "vscode": "^1.21.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/brainomite/classy-react.git"
     },
     "categories": [
         "Other"
