@@ -8,8 +8,8 @@
         "vscode": "^1.21.0"
     },
     "repository": {
-        "type" : "git",
-        "url" : "https://github.com/brainomite/classy-react.git"
+        "type": "git",
+        "url": "https://github.com/brainomite/classy-react.git"
     },
     "categories": [
         "Other"
