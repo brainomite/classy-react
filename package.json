@@ -4,6 +4,7 @@
     "description": "Helps convert from a react function to a react class, and a stateless react class to a react function.",
     "version": "0.0.1",
     "publisher": "aaronYoung",
+    "license": "MIT",
     "engines": {
         "vscode": "^1.21.0"
     },
