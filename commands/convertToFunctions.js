@@ -48,6 +48,7 @@ const transpolateToFunctions = code => {
         path.replaceWith(types.parenthesizedExpression(path.node))
       }
     },
+    /* eslint-disable complexity */
     ThisExpression(path){
       const parentPath = path.parentPath
       if (path.key === 'object') {
@@ -57,10 +58,13 @@ const transpolateToFunctions = code => {
           parentPath.replaceWith(parentPath.node.property)
         } else if (parentPath.isExpression() && parentPath.parentKey === 'expression'){
           parentPath.replaceWith(parentPath.node.property)
+        } else if (parentPath.isExpression() && parentPath.parentKey === 'callee' ){
+          parentPath.replaceWith(parentPath.node.property)
         }
 
       }
     },
+    /* eslint-enable */
     Identifier(path){
       if (path.node.name === 'props'){
         propsWasSeen = true

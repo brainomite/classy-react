@@ -13,13 +13,12 @@ class renderTest extends React.Component {
   }
 
   render() {
-    const a = this.a
-    return (<h1>{this.test}</h1>);
+    this.a()
   };
 }
+
+
 module.exports = {
   test,
   renderTest
 }
-
-//3powellardv6caspkkrdn7my66riddo3sd56mgb44ovygcolr34q
