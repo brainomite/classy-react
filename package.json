@@ -2,7 +2,7 @@
     "name": "classy-react",
     "displayName": "Classy React",
     "description": "Helps convert from a react function to a react class, and a stateless react class to a react function.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "aaronYoung",
     "license": "MIT",
     "engines": {

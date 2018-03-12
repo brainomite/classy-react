@@ -17,6 +17,10 @@ None at this time.
 
 ## Release Notes
 
+### 0.0.3
+
+Added more life cycle hooks to skip
+
 ### 0.0.2
 
 Added licensing details
