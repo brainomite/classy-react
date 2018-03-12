@@ -7,9 +7,16 @@ const test = function () {
   return a < b ? a : b
 }
 
-const renderTest = props => (
-    <h1>{props.test}</h1>
-  )
+class renderTest extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    this.a()
+  };
+}
+
 
 module.exports = {
   test,
