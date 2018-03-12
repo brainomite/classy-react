@@ -17,7 +17,10 @@ None at this time.
 
 ## Release Notes
 
+### 0.0.2
+
+Added licensing details
+
 ### 0.0.1
 
 Initial beta release of Classy React
-
