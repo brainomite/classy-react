@@ -17,15 +17,6 @@ const errorMessage = msg => {
 const generateResultObj = () => ({
 })
 
-const nestedVisitor = {
-  JSXElement(path){
-    if (path.node.extra &&
-        path.node.extra.parenthesized &&
-        !types.isParenthesizedExpression(path.parent)){
-      path.replaceWith(types.parenthesizedExpression(path.node))
-    }
-  },
-}
 
 const buildRequire = template(`const FUNCTION_NAME = (props) => FUNCTION_BODY`);
 
@@ -44,12 +35,26 @@ const transpolateToFunctions = code => {
   const newBody = []
   const classNode = ast.program.body[0]
   const className = classNode.id.name
+  let propsWasSeen = false
+  const nestedVisitor = {
+    JSXElement(path){
+      if (path.node.extra &&
+          path.node.extra.parenthesized &&
+          !types.isParenthesizedExpression(path.parent)){
+        path.replaceWith(types.parenthesizedExpression(path.node))
+      }
+    },
+    MemberExpression(path){
+      console.log('inMember')
+    },
+  }
   traverse(ast, {
     ClassMethod(path){
       const methodName = path.node.key.name
       if (classMethodsToSkip.includes(methodName)) {
         return
       }
+      propsWasSeen = false
       path.traverse(nestedVisitor)
       const body = path.node.body
 
@@ -73,7 +78,7 @@ const command = () => {
   } else {
     const eDocument = editor.document
     const code = eDocument.getText(selection)
-    if (code.search(/this\.setState|this\.state/)){
+    if (/this\.setState|this\.state/.test(code)){
       errorMessage('At this time Classy React only supports converting stateless classes.\nPlease eliminate any useage of state and try again')
       return
     }
